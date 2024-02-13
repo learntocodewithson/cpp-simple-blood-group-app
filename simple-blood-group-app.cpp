@@ -78,6 +78,37 @@ class User {
    }
   }
 
+  void deleteUser(){
+    setUsersCount();
+
+    string row_data, temp_users[users_count];
+    int counter = 0;
+
+    // read users.csv and store data in array of string
+    ifstream ReadUsers("users.csv");
+    while(getline(ReadUsers, row_data)){
+      if(counter != (user_position-1)){
+        temp_users[counter] = row_data;
+      }
+      counter++;
+    }
+    ReadUsers.close();
+
+    // open new users.csv
+    ofstream WriteUsers("users.csv");
+    if(WriteUsers.is_open()){
+       // loop the updated array of string and put to users.csv
+       for(int i = 0; i < users_count; i++){
+           if(temp_users[i] != ""){
+            WriteUsers << temp_users[i] << endl;
+           }
+        }
+      WriteUsers.close();
+    }else {
+      cerr << "\nUnable to create and open a file";
+    }
+  }
+
   void update(){
 
     setUsersCount();
@@ -174,7 +205,7 @@ class User {
 
 
 void displayMenu(){
- cout << "\n1. Add New Record\n2. Edit Record\n3. Delete Record\n4. Search Record by group\n5. Exit";
+ cout << "\n1. Add New Record\n2. Edit Record\n3. Delete Record\n4. Search Record by group\n5. Display All Users\n6. Exit";
 }
 
 void addNewRecord(){
@@ -240,7 +271,41 @@ void editRecord(){
 }
 
 void deleteRecord(){
+ User user;
+ int position_choice;
+ string yes_or_no;
+ bool yes_or_no_answer = 0;
+
  cout << "==== Deleting Record ====";
+ user.displayAll();
+
+ cout << "Enter the user's position: ";
+ cin >> position_choice;
+
+ cout << user.findRecordByPosition(position_choice);
+
+ while(!yes_or_no_answer){
+  cout << "Are you sure you want to delete " << user.getName() << "? <yes or no>: ";
+  cin >> yes_or_no;
+
+  if(yes_or_no == "yes"){
+    user.deleteUser();
+    cout << endl << user.getName() << " is now deleted.\n";
+    yes_or_no_answer = 1;
+  }else if (yes_or_no == "no"){
+    cout << endl << user.getName() << " is not deleted.\n";
+    yes_or_no_answer = 1;
+  }else{
+    cout << endl << "Please answer yes or no only.\n\n";
+  }
+ }
+
+}
+
+void displayAllUsers(){
+  User user;
+  cout << "==== All Users ====";
+  user.displayAll();
 }
 
 void searchRecordByGroup(){
@@ -270,6 +335,9 @@ int main() {
     break;
    case 4:
     searchRecordByGroup();
+    break;
+   case 5:
+    displayAllUsers();
     break;
    default:
     exit_choice = 1;
