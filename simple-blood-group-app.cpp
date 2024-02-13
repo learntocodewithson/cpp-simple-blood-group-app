@@ -7,15 +7,19 @@ using namespace std;
 
 class User {
  string name, blood_group;
- int age, height, user_position = 0;
+ int age, height, user_position, users_count;
 
  public:
-  User(){}
+  User(){
+    user_position = 0;
+  }
+
   User(string _name, int _age, int _height, string _blood_group) {
    name = _name;
    age = _age;
    height = _height;
    blood_group = _blood_group;
+   user_position = 0;
   }
 
   // getter
@@ -52,6 +56,15 @@ class User {
    height = _height;
   }
 
+  void setUsersCount(){
+    users_count = 0;
+    string row_data;
+
+    ifstream ReadUsers("users.csv");
+    while(getline(ReadUsers, row_data)){ users_count++; }
+    ReadUsers.close();
+  }
+
   void save(){
    ofstream Users("users.csv", ios::app);
    if(Users.is_open()){
@@ -63,6 +76,43 @@ class User {
    }else {
     cerr << "\nUnable to create and open a file";
    }
+  }
+
+  void update(){
+
+    setUsersCount();
+
+    string row_data, temp_users[users_count];
+    string formatted_user_data = name + "," + to_string(age) + "," + to_string(height) + "," + blood_group;
+ 
+    int counter = 0;
+    // read users.csv and store data in array of string
+    ifstream ReadUsers("users.csv");
+    while(getline(ReadUsers, row_data)){
+      // while reading, when counter is match on the current position, replace
+      if(counter == (user_position-1)){
+        temp_users[counter] = formatted_user_data;
+      }else{
+        temp_users[counter] = row_data;
+      }
+      counter++;
+    }
+    ReadUsers.close();
+
+    // open new users.csv
+    ofstream WriteUsers("users.csv");
+
+    if(WriteUsers.is_open()){
+       // loop the updated array of string and put to users.csv
+       for(int i = 0; i < users_count; i++){
+          WriteUsers << temp_users[i] << endl;
+        }
+      WriteUsers.close();
+
+      cout << "\nUpdated succesfully\n"; 
+    }else {
+      cerr << "\nUnable to create and open a file";
+    }
   }
 
   void displayAll(){
@@ -161,40 +211,32 @@ void editRecord(){
  cin >> position_choice;
  cout << user.findRecordByPosition(position_choice);
  
- cout << "\nEdit name(" << user.getName() << ")[Type: N to keep the actual value]: ";
+ cout << "\nEdit name(" << user.getName() << ")[Type: N or n to keep the actual value]: ";
  cin >> _name;
- if(_name != "N" || _name != "n"){
+ if(_name != "N" && _name != "n"){
   user.setName(_name);
  }
 
- cout << "\nEdit age(" << user.getAge() << ")[Type: N to keep the actual value]: ";
+ cout << "\nEdit age(" << user.getAge() << ")[Type: N or n to keep the actual value]: ";
  cin >> _age;
- if(_age != "N" || _age != "n"){
-  user.setAge(_age);
+ if(_age != "N" && _age != "n"){
+  user.setAge(stoi(_age));
  }
 
- cout << "\nEdit height(" << user.getHeight() << ")[Type: N to keep the actual value]: ";
+ cout << "\nEdit height(" << user.getHeight() << ")[Type: N or n to keep the actual value]: ";
  cin >> _height;
- if(_height != "N" || _height != "n"){
-  user.setHeight(_height);
+ if(_height != "N" && _height != "n"){
+  user.setHeight(stoi(_height));
  }
 
- cout << "\nEdit blood group(" << user.getBloodGroup() << ")[Type: N to keep the actual value]: ";
+ cout << "\nEdit blood group(" << user.getBloodGroup() << ")[Type: N or n to keep the actual value]: ";
  cin >> _blood_group;
- if(_blood_group != "N" || _blood_group != "n"){
+ if(_blood_group != "N" && _blood_group != "n"){
   user.setBloodGroup(_blood_group);
  }
 
+ // update the local database
  user.update();
-}
-
-void update(){
- // list users - loop and store data in struct array
- // open a new file users.csv
- // loop struct array (data)
- // loop and start adding the data again
- // while looping - match the position replace with new edited record
- // wait until the new record completed
 }
 
 void deleteRecord(){
