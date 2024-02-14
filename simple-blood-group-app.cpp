@@ -174,6 +174,34 @@ class User {
    Users.close();
   }
 
+  void searchRecordsByBloodGroup(string blood_grp){
+    cout << "\nList of Users in Blood Group " + blood_grp;
+    string row_data;
+    int counter = 0;
+
+    ifstream Users("users.csv");
+    cout << "\nPosition\tName\tAge\tHeight\tBlood Group\n";
+      while(getline(Users, row_data)){
+        istringstream scanner(row_data);
+        string _age, _height;
+
+        getline(scanner, name, ',');
+        getline(scanner, _age, ',');
+        getline(scanner, _height, ',');
+        getline(scanner, blood_group);
+
+        age = stoi(_age);
+        height = stoi(_height);
+
+        if(blood_grp == blood_group){
+          counter++;
+          cout << counter << ".)\t\t" << name << "\t" << age << "\t" << height << "\t" << blood_group << endl;
+        }
+      }
+
+    Users.close();
+  }
+
   string findRecordByPosition(int _user_position){
    ifstream Users("users.csv");
    string row_data, user_info = "";
@@ -205,7 +233,7 @@ class User {
 
 
 void displayMenu(){
- cout << "\n1. Add New Record\n2. Edit Record\n3. Delete Record\n4. Search Record by group\n5. Display All Users\n6. Exit";
+ cout << "\n1. Add New Record\n2. Edit Record\n3. Delete Record\n4. Search Record by Blood Group\n5. Display All Users\n6. Exit";
 }
 
 void addNewRecord(){
@@ -308,8 +336,14 @@ void displayAllUsers(){
   user.displayAll();
 }
 
-void searchRecordByGroup(){
- cout << "==== Search Record By Group ====";
+void searchRecordByBloodGroup(){
+ User user;
+ string blood_group;
+ cout << "==== Search Record By Blood Group ====";
+ cout << "\nEnter Blood Group: ";
+ cin >> blood_group;
+
+ user.searchRecordsByBloodGroup(blood_group);
 }
 
 int main() {
@@ -334,7 +368,7 @@ int main() {
     deleteRecord();
     break;
    case 4:
-    searchRecordByGroup();
+    searchRecordByBloodGroup();
     break;
    case 5:
     displayAllUsers();
